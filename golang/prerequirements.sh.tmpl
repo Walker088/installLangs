@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Reference: 
+# 1. Golang Official Site: https://go.dev/doc/install
+# 2. Linux Check if PATH exists https://stackoverflow.com/questions/62873982/linux-check-if-path-exists
+
+# Append our default paths $1: NEW_PATH $2: DEST_FILE
+appendPathToFile () {
+    case ":$PATH:" in
+        *:"$1":*)
+            echo "$1 already in $2.PATH"
+            ;;
+        *)
+            echo "PATH=\$PATH:$1" >> $2
+            ;;
+    esac
+}
+# Append our default paths $1: NEW_PATH
+appendPath () {
+    case ":$PATH:" in
+        *:"$1":*)
+            echo "$1 already in PATH"
+            ;;
+        *)
+            PATH="${PATH:+$PATH:}$1"
+            ;;
+    esac
+}
+
+# Install golang from the official website
+if command -v go &> /dev/null
+then
+    echo "go already installed"
+else
+    #curl -L {{ .Env.GO_SOURCE_URL }} --output {{ .Env.GO_VERSION }}.tar.gz
+    #rm -rf {{ .Env.GO_INSTALL_PATH }}/go && tar -C {{ .Env.GO_INSTALL_PATH }} -xzf {{ .Env.GO_VERSION }}.tar.gz
+    rm {{ .Env.GO_VERSION }}.tar.gz
+fi
+
+# Add the golang path to PATH variable
+if [[ -d "{{ .Env.GO_INSTALL_PATH }}/go" ]] ; then
+    #PATH=$PATH:{{ .Env.GO_INSTALL_PATH }}/go/bin
+    #appendPath "{{ .Env.GO_INSTALL_PATH }}/go/bin"
+    echo "Add {{ .Env.GO_INSTALL_PATH }}/go/bin to bashrc"
+    #echo "PATH=$PATH:{{ .Env.GO_INSTALL_PATH }}/go/bin" >> $HOME/.bashrc
+    appendPathToFile "{{ .Env.GO_INSTALL_PATH }}/go/bin" "$HOME/.bashrc"
+fi
+
+appendPath "{{ .Env.GO_INSTALL_PATH }}/go/bin"
+go version
